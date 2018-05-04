@@ -5622,15 +5622,15 @@ def makedirs_perms(name,
     if not tail:
         head, tail = path.split(head)
     if head and tail and not path.exists(head):
-        try:
-            makedirs_perms(head, user, group, mode)
-        except OSError as exc:
-            # be happy if someone already created the path
-            if exc.errno != errno.EEXIST:
-                raise
+        makedirs_perms(head, user, group, mode)
         if tail == os.curdir:  # xxx/newdir/. exists if xxx/newdir exists
             return
-    os.mkdir(name)
+    try:
+        os.mkdir(name)
+    except OSError as exc:
+        # be happy if someone already created the path
+        if exc.errno != errno.EEXIST:
+            raise
     check_perms(name,
                 None,
                 user,
